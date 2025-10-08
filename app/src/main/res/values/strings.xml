@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">NinaPLay</string>
+    <string name="app_name">Nina Playlist</string>
+    <string name="search_hint">Pretraži pjesme...</string>
+    <string name="playlist_title">Playlista</string>
+    <string name="now_playing">Sada svira</string>
+    <string name="add_to_playlist">Dodaj</string>
+    <string name="remove_from_playlist">Ukloni</string>
 </resources>
