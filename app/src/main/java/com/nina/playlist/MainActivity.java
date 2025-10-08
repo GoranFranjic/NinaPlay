@@ -2,9 +2,6 @@ package com.nina.playlist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Song> songs = new ArrayList<>();
     private EditText searchEditText;
     private Button searchButton, playButton, pauseButton, stopButton;
-    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViews();
         setupRecyclerView();
-        setupWebView();
         setupClickListeners();
 
         // Dodaj neke test pjesme
@@ -45,23 +40,12 @@ public class MainActivity extends AppCompatActivity {
         playButton = findViewById(R.id.playButton);
         pauseButton = findViewById(R.id.pauseButton);
         stopButton = findViewById(R.id.stopButton);
-        webView = findViewById(R.id.webView);
     }
 
     private void setupRecyclerView() {
         adapter = new PlaylistAdapter(songs, this::playSong);
         playlistRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         playlistRecyclerView.setAdapter(adapter);
-    }
-
-    private void setupWebView() {
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
-        webView.setWebChromeClient(new WebChromeClient());
-
-        // Load YouTube music
-        webView.loadUrl("https://music.youtube.com");
     }
 
     private void setupClickListeners() {
@@ -77,13 +61,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         pauseButton.setOnClickListener(v -> {
-            // Pauziraj WebView audio
-            webView.onPause();
+            // Pauziraj reprodukciju
         });
 
         stopButton.setOnClickListener(v -> {
             stopMusicService();
-            webView.loadUrl("about:blank"); // Zaustavi sve
         });
     }
 
@@ -96,23 +78,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchSongs(String query) {
-        // Pretraži direktno u YouTube Music WebView
-        String searchUrl = "https://music.youtube.com/search?q=" + query.replace(" ", "+");
-        webView.loadUrl(searchUrl);
-
         // Dodaj u playlistu (simulacija)
         songs.add(new Song("search_" + System.currentTimeMillis(), query, "Rezultat pretrage", ""));
         adapter.notifyDataSetChanged();
     }
 
     private void playSong(Song song) {
-        if (song.getId().startsWith("search_")) {
-            // Ako je search rezultat, ostani na trenutnoj stranici
-            return;
-        }
-        // Play specific song u WebView
-        String youtubeUrl = "https://www.youtube.com/watch?v=" + song.getId();
-        webView.loadUrl(youtubeUrl);
+        // Otvori YouTube app ili browser za reprodukciju
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(android.net.Uri.parse("https://www.youtube.com/watch?v=" + song.getId()));
+        startActivity(intent);
     }
 
     private void startMusicService() {
@@ -123,23 +98,5 @@ public class MainActivity extends AppCompatActivity {
     private void stopMusicService() {
         Intent serviceIntent = new Intent(this, MusicService.class);
         stopService(serviceIntent);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        webView.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        webView.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        webView.destroy();
     }
 }

@@ -44,11 +44,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SongVi
                 songClickListener.onSongClick(song);
             }
         });
-
-        holder.removeButton.setOnClickListener(v -> {
-            songs.remove(position);
-            notifyItemRemoved(position);
-        });
     }
 
     @Override
@@ -58,14 +53,13 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SongVi
 
     static class SongViewHolder extends RecyclerView.ViewHolder {
         TextView songTitle, songArtist;
-        Button playButton, removeButton;
+        Button playButton;
 
         public SongViewHolder(@NonNull View itemView) {
             super(itemView);
             songTitle = itemView.findViewById(R.id.songTitle);
             songArtist = itemView.findViewById(R.id.songArtist);
             playButton = itemView.findViewById(R.id.playButton);
-            removeButton = itemView.findViewById(R.id.removeButton);
         }
     }
 }
